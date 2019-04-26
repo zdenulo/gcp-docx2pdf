@@ -1,0 +1,12 @@
+steps:
+  # build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}:${TAG_NAME}', '.']
+  # push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}']
+  # Deploy container image to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['beta', 'run', 'deploy', '${_SERVICE_NAME}', '--image', 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}:${TAG_NAME}', '--region', 'us-central1', '--memory', '1Gi', '--update-env-vars', '${_ENV_VARIABLES}']
+images:
+- gcr.io/$PROJECT_ID/${_SERVICE_NAME}
